@@ -1,0 +1,8 @@
+{
+  "name": "ourFIT",
+  "description": "A circular fashion ecosystem for Indian GenZ. Blends brutalist aesthetics with a 3-way marketplace for upcycling.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

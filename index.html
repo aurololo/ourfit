@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#0A0A0A" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="ourFIT" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/icon.svg" />
+    <title>ourFIT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              display: ['Space Grotesk', 'sans-serif'],
+              mono: ['Space Mono', 'monospace'],
+            },
+            colors: {
+              brand: {
+                black: '#0A0A0A',
+                dark: '#121212',
+                orange: '#FF6B35', // The signature accent
+                blue: '#00D9FF',   // Secondary accent
+                green: '#39FF14',  // Success/Vouch
+                neon: '#CCFF00',   // Acid/Neon Yellow
+                pink: '#FF0080',   // Extra Gen Z accent
+                glass: 'rgba(255, 255, 255, 0.08)',
+                glassBorder: 'rgba(255, 255, 255, 0.15)',
+              }
+            },
+            animation: {
+              'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'shimmer': 'shimmer 2s linear infinite',
+              'gradient': 'gradient 8s linear infinite',
+              'spring-in': 'spring-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+              'sticker-pop': 'sticker-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+              'slide-up': 'slide-up 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+              'fade-up': 'fade-up 0.4s ease forwards',
+              'wiggle': 'wiggle 0.6s ease-in-out',
+              'glow-pulse': 'glow-pulse 2.5s ease-in-out infinite',
+            },
+            keyframes: {
+              shimmer: {
+                '0%': { backgroundPosition: '-1000px 0' },
+                '100%': { backgroundPosition: '1000px 0' }
+              },
+              gradient: {
+                '0%, 100%': { backgroundPosition: '0% 50%' },
+                '50%': { backgroundPosition: '100% 50%' },
+              },
+              'spring-in': {
+                '0%': { opacity: '0', transform: 'scale(0.6) translateY(20px)' },
+                '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+              },
+              'sticker-pop': {
+                '0%': { opacity: '0', transform: 'scale(0) rotate(-8deg)' },
+                '70%': { transform: 'scale(1.1) rotate(2deg)' },
+                '100%': { opacity: '1', transform: 'scale(1) rotate(0deg)' },
+              },
+              'slide-up': {
+                '0%': { opacity: '0', transform: 'translateY(24px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              'fade-up': {
+                '0%': { opacity: '0', transform: 'translateY(12px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              'wiggle': {
+                '0%, 100%': { transform: 'rotate(-3deg)' },
+                '50%': { transform: 'rotate(3deg)' },
+              },
+              'glow-pulse': {
+                '0%, 100%': { boxShadow: '0 0 12px rgba(255,107,53,0.3)' },
+                '50%': { boxShadow: '0 0 28px rgba(255,107,53,0.7)' },
+              },
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      :root {
+        --safe-bottom: env(safe-area-inset-bottom, 0px);
+        --safe-top: env(safe-area-inset-top, 0px);
+      }
+      /* safe-area helpers — apply to any page header that sits at the top */
+      .pt-safe { padding-top: max(1rem, calc(env(safe-area-inset-top) + 0.5rem)); }
+      .pt-safe-sm { padding-top: max(0.75rem, calc(env(safe-area-inset-top) + 0.25rem)); }
+      body {
+        background-color: #0A0A0A;
+        color: white;
+        -webkit-tap-highlight-color: transparent;
+        overscroll-behavior: none;
+      }
+
+      /* ── Scrollbar hide ─────────────────────────── */
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      /* ── Glass panel ────────────────────────────── */
+      .glass-panel {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+      }
+
+      /* ── Brutalist card ─────────────────────────── */
+      .brutalist-card {
+        background: #121212;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: transform 0.2s ease;
+      }
+      .brutalist-card:active {
+        transform: scale(0.98);
+      }
+
+      /* ── Noise texture ──────────────────────────── */
+      .bg-noise {
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+      }
+
+      /* ── Sticker label — slightly tilted bold badge ─ */
+      .sticker {
+        display: inline-block;
+        font-weight: 900;
+        font-family: 'Space Grotesk', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 2px 8px;
+        border-radius: 4px;
+        transform: rotate(-1.5deg);
+        box-shadow: 2px 2px 0px rgba(0,0,0,0.9);
+        line-height: 1.4;
+      }
+      .sticker-orange { background: #FF6B35; color: #000; }
+      .sticker-neon   { background: #CCFF00; color: #000; }
+      .sticker-blue   { background: #00D9FF; color: #000; }
+      .sticker-green  { background: #39FF14; color: #000; }
+      .sticker-white  { background: #ffffff; color: #000; }
+
+      /* ── Spring press — bouncy active state ───────── */
+      .spring-press {
+        transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .spring-press:active { transform: scale(0.91); }
+
+      /* ── Glow border ─────────────────────────────── */
+      .glow-border-orange {
+        box-shadow: 0 0 0 1px rgba(255,107,53,0.3), 0 0 16px rgba(255,107,53,0.2);
+      }
+      .glow-border-blue {
+        box-shadow: 0 0 0 1px rgba(0,217,255,0.3), 0 0 16px rgba(0,217,255,0.2);
+      }
+
+      /* ── Marquee-style scroll label ──────────────── */
+      @keyframes marquee {
+        0%   { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+      .marquee-inner { animation: marquee 12s linear infinite; }
+      .marquee-inner:hover { animation-play-state: paused; }
+
+      /* ── Page transition ─────────────────────────── */
+      @keyframes page-slide-in {
+        from { opacity: 0; transform: translateX(24px); }
+        to   { opacity: 1; transform: translateX(0); }
+      }
+      .page-enter { animation: page-slide-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    </style>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
