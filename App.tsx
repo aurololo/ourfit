@@ -11,6 +11,13 @@ import MessagesList from './views/MessagesList';
 import Onboarding from './views/Onboarding';
 import ShippingPage from './views/ShippingPage';
 import { MOCK_PRODUCTS, MOCK_USER, MOCK_CHATS, ARTIST_USER } from './constants';
+
+// Distinct seed avatars per user so DMs never look identical before real photos load
+const CHAT_AVATAR_SEEDS: Record<string, string> = {
+  'a1': 'https://ui-avatars.com/api/?name=Divya+R&background=FF6B35&color=fff&size=200&bold=true',
+  'u8': 'https://ui-avatars.com/api/?name=Neha+V&background=7C3AED&color=fff&size=200&bold=true',
+  'u4': 'https://ui-avatars.com/api/?name=Rohan+M&background=1D4ED8&color=fff&size=200&bold=true',
+};
 import { Product, User } from './types';
 import { fetchIndianAvatars } from './services/userService';
 
@@ -70,10 +77,18 @@ const AppContent: React.FC = () => {
     new Set(lsGet<string[]>(LS.WISHLIST, []))
   );
   const [viewingUser, setViewingUser] = useState<User | null>(null);
+  const [chatSessions, setChatSessions] = useState(() =>
+    MOCK_CHATS.map(s => ({
+      ...s,
+      otherUser: CHAT_AVATAR_SEEDS[s.otherUser.id]
+        ? { ...s.otherUser, avatar: CHAT_AVATAR_SEEDS[s.otherUser.id] }
+        : s.otherUser,
+    }))
+  );
 
   const navigate = useNavigate();
 
-  // Fetch real Indian user photos from randomuser.me and apply to all product owners
+  // Fetch real Indian user photos from randomuser.me and apply to products + chat sessions
   useEffect(() => {
     fetchIndianAvatars().then(avatarMap => {
       if (!Object.keys(avatarMap).length) return;
@@ -81,6 +96,12 @@ const AppContent: React.FC = () => {
         ...p,
         owner: avatarMap[p.owner.id] ? { ...p.owner, avatar: avatarMap[p.owner.id] } : p.owner,
         artist: p.artist && avatarMap[p.artist.id] ? { ...p.artist, avatar: avatarMap[p.artist.id] } : p.artist,
+      })));
+      setChatSessions(prev => prev.map(s => ({
+        ...s,
+        otherUser: avatarMap[s.otherUser.id]
+          ? { ...s.otherUser, avatar: avatarMap[s.otherUser.id] }
+          : s.otherUser,
       })));
     });
   }, []);
@@ -188,7 +209,7 @@ const AppContent: React.FC = () => {
   };
 
   // Unread count for Navbar badge
-  const totalUnread = MOCK_CHATS.reduce((sum, s) => sum + s.unreadCount, 0);
+  const totalUnread = chatSessions.reduce((sum, s) => sum + s.unreadCount, 0);
 
   // Auth gate
   if (!isAuthenticated) {
@@ -272,7 +293,7 @@ const AppContent: React.FC = () => {
 
         {activeTab === 'chat' && (
           <MessagesList
-            sessions={MOCK_CHATS}
+            sessions={chatSessions}
             onSelectSession={(product) => setChatProduct(product)}
             onViewProfile={handleViewProfile}
           />
