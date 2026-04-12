@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, ArrowRight, RefreshCw, Zap, ArrowLeft, Palette, ShoppingBag } from 'lucide-react';
 
 interface OnboardingProps {
@@ -103,33 +103,73 @@ const Onboarding: React.FC<OnboardingProps> = ({ onLogin }) => {
         return 3;
     };
 
+    // Canvas-based pixelation — the only cross-browser method that works on mobile video
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const animFrameRef = useRef<number>(0);
+
+    useEffect(() => {
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+        if (!video || !canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        // PIXEL_SCALE: higher = more pixelated. 14 obscures faces while staying subtle.
+        const PIXEL_SCALE = 14;
+        const off = document.createElement('canvas');
+
+        const resize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+        resize();
+        window.addEventListener('resize', resize);
+
+        const draw = () => {
+            if (video.readyState >= 2) {
+                off.width = Math.max(1, Math.ceil(canvas.width / PIXEL_SCALE));
+                off.height = Math.max(1, Math.ceil(canvas.height / PIXEL_SCALE));
+                const offCtx = off.getContext('2d');
+                if (offCtx) {
+                    offCtx.drawImage(video, 0, 0, off.width, off.height);
+                    ctx.imageSmoothingEnabled = false;
+                    ctx.drawImage(off, 0, 0, canvas.width, canvas.height);
+                }
+            }
+            animFrameRef.current = requestAnimationFrame(draw);
+        };
+
+        animFrameRef.current = requestAnimationFrame(draw);
+
+        return () => {
+            cancelAnimationFrame(animFrameRef.current);
+            window.removeEventListener('resize', resize);
+        };
+    }, []);
+
     return (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-between overflow-hidden text-white font-sans">
-            {/* SVG pixelation filter definition */}
-            <svg className="absolute w-0 h-0 overflow-hidden" aria-hidden="true">
-                <defs>
-                    <filter id="onboarding-pixelate" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
-                        <feFlood x="4" y="4" height="2" width="2" />
-                        <feComposite width="10" height="10" />
-                        <feTile result="a" />
-                        <feComposite in="SourceGraphic" in2="a" operator="in" />
-                        <feMorphology operator="dilate" radius="5" />
-                    </filter>
-                </defs>
-            </svg>
-
-            {/* Video Background */}
+            {/* Video — hidden, drives the canvas below */}
             <video
+                ref={videoRef}
                 autoPlay
                 loop
                 muted
                 playsInline
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover opacity-0 pointer-events-none"
                 poster="/videos/onboarding-poster.jpg"
-                style={{ filter: 'url(#onboarding-pixelate)' }}
             >
                 <source src="/videos/ourfit-onboarding.mp4" type="video/mp4" />
             </video>
+
+            {/* Canvas — renders pixelated frames from the hidden video */}
+            <canvas
+                ref={canvasRef}
+                className="absolute inset-0 w-full h-full"
+                style={{ imageRendering: 'pixelated' }}
+            />
 
             {/* Gradient Overlay — heavier so text always readable */}
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/30" />
