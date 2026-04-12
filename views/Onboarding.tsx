@@ -151,20 +151,20 @@ const Onboarding: React.FC<OnboardingProps> = ({ onLogin }) => {
 
     return (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-between overflow-hidden text-white font-sans">
-            {/* Video — hidden, drives the canvas below */}
+            {/* Video — visible so it shows while canvas warms up; canvas covers it once drawing starts */}
             <video
                 ref={videoRef}
                 autoPlay
                 loop
                 muted
                 playsInline
-                className="absolute inset-0 w-full h-full object-cover opacity-0 pointer-events-none"
+                className="absolute inset-0 w-full h-full object-cover"
                 poster="/videos/onboarding-poster.jpg"
             >
                 <source src="/videos/ourfit-onboarding.mp4" type="video/mp4" />
             </video>
 
-            {/* Canvas — renders pixelated frames from the hidden video */}
+            {/* Canvas — pixelated overlay, covers the video once frames are ready */}
             <canvas
                 ref={canvasRef}
                 className="absolute inset-0 w-full h-full"
