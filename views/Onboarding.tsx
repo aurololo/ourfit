@@ -105,6 +105,19 @@ const Onboarding: React.FC<OnboardingProps> = ({ onLogin }) => {
 
     return (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-between overflow-hidden text-white font-sans">
+            {/* SVG pixelation filter definition */}
+            <svg className="absolute w-0 h-0 overflow-hidden" aria-hidden="true">
+                <defs>
+                    <filter id="onboarding-pixelate" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+                        <feFlood x="4" y="4" height="2" width="2" />
+                        <feComposite width="10" height="10" />
+                        <feTile result="a" />
+                        <feComposite in="SourceGraphic" in2="a" operator="in" />
+                        <feMorphology operator="dilate" radius="5" />
+                    </filter>
+                </defs>
+            </svg>
+
             {/* Video Background */}
             <video
                 autoPlay
@@ -113,6 +126,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onLogin }) => {
                 playsInline
                 className="absolute inset-0 w-full h-full object-cover"
                 poster="/videos/onboarding-poster.jpg"
+                style={{ filter: 'url(#onboarding-pixelate)' }}
             >
                 <source src="/videos/ourfit-onboarding.mp4" type="video/mp4" />
             </video>

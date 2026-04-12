@@ -110,6 +110,7 @@ const Profile: React.FC<ProfileProps> = ({ user, products, wishlistIds, onProduc
                 {!isOwnProfile && onBack && (
                     <button
                         onClick={onBack}
+                        aria-label="Go back"
                         style={{ top: 'max(1rem, calc(env(safe-area-inset-top) + 0.25rem))' }}
                         className="absolute left-4 p-2 bg-black/20 backdrop-blur rounded-full hover:bg-black/40 transition-colors z-20 text-white"
                     >
@@ -119,7 +120,7 @@ const Profile: React.FC<ProfileProps> = ({ user, products, wishlistIds, onProduc
 
                 {/* Settings */}
                 {isOwnProfile && (
-                    <button style={{ top: 'max(1rem, calc(env(safe-area-inset-top) + 0.25rem))' }} className="absolute right-4 p-2 bg-black/20 backdrop-blur rounded-full hover:bg-black/40 transition-colors z-20">
+                    <button aria-label="Settings" style={{ top: 'max(1rem, calc(env(safe-area-inset-top) + 0.25rem))' }} className="absolute right-4 p-2 bg-black/20 backdrop-blur rounded-full hover:bg-black/40 transition-colors z-20">
                         <Settings className="text-white" size={20} />
                     </button>
                 )}
@@ -248,6 +249,7 @@ const Profile: React.FC<ProfileProps> = ({ user, products, wishlistIds, onProduc
                                                     src={img}
                                                     alt={`Work ${idx + 1}`}
                                                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                                    onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80'; }}
                                                 />
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-60" />
                                                 <div className="absolute bottom-2 left-2 right-2">

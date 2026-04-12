@@ -45,10 +45,10 @@ const ShippingPage: React.FC<ShippingPageProps> = ({ product, onBack, currentUse
 
     useEffect(() => {
         const timers = [
-            setTimeout(() => setStep(1), 600),
-            setTimeout(() => setStep(2), 1800),
-            setTimeout(() => setStep(3), 4000),
-            setTimeout(() => setStep(4), 7500),
+            setTimeout(() => setStep(1), 3000),
+            setTimeout(() => setStep(2), 9000),
+            setTimeout(() => setStep(3), 18000),
+            setTimeout(() => setStep(4), 30000),
         ];
         return () => timers.forEach(clearTimeout);
     }, []);
@@ -154,7 +154,7 @@ const ShippingPage: React.FC<ShippingPageProps> = ({ product, onBack, currentUse
                     className="absolute left-0 right-0 top-0 flex items-center gap-4 px-4 bg-gradient-to-b from-black/80 to-transparent z-20"
                     style={{ paddingTop: 'max(1rem, calc(env(safe-area-inset-top) + 0.25rem))', paddingBottom: '1rem' }}
                 >
-                    <button onClick={onBack} className="p-2 bg-black/40 backdrop-blur border border-white/10 rounded-full active:scale-90">
+                    <button onClick={onBack} aria-label="Go back" className="p-2 bg-black/40 backdrop-blur border border-white/10 rounded-full active:scale-90">
                         <ArrowLeft size={20} />
                     </button>
                     <div>
@@ -217,10 +217,10 @@ const ShippingPage: React.FC<ShippingPageProps> = ({ product, onBack, currentUse
                                 <p className="text-[10px] text-gray-500 font-mono mt-1">{DELIVERY_PARTNER.vehicle} · {DELIVERY_PARTNER.vehicleNum}</p>
                             </div>
                             <div className="flex gap-2">
-                                <button className="w-10 h-10 bg-brand-orange/10 border border-brand-orange/30 rounded-full flex items-center justify-center active:scale-90">
+                                <button aria-label="Call delivery partner" className="w-10 h-10 bg-brand-orange/10 border border-brand-orange/30 rounded-full flex items-center justify-center active:scale-90">
                                     <Phone size={16} className="text-brand-orange" />
                                 </button>
-                                <button className="w-10 h-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center active:scale-90">
+                                <button aria-label="Message delivery partner" className="w-10 h-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center active:scale-90">
                                     <MessageCircle size={16} className="text-gray-400" />
                                 </button>
                             </div>

@@ -25,10 +25,10 @@ const MessagesList: React.FC<MessagesListProps> = ({ sessions, onSelectSession, 
     const totalUnread = sessions.reduce((sum, s) => sum + s.unreadCount, 0);
 
     return (
-        <div className="min-h-screen bg-brand-black pb-24 px-4 relative" style={{ paddingTop: 'max(1.5rem, calc(env(safe-area-inset-top) + 0.5rem))' }}>
+        <div className="h-screen overflow-y-auto overflow-x-hidden bg-brand-black pb-24 px-4 relative" style={{ paddingTop: 'max(1.5rem, calc(env(safe-area-inset-top) + 0.5rem))' }}>
 
             {/* Ambient Background Glow */}
-            <div className="fixed top-0 right-0 w-64 h-64 bg-violet-600/10 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-violet-600/10 rounded-full blur-[100px] pointer-events-none" />
 
             {/* Header */}
             <div className="flex justify-between items-end mb-6 relative z-10">

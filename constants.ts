@@ -624,7 +624,7 @@ export const MOCK_CHATS: ChatSession[] = [
     {
         id: 'c2',
         product: MOCK_PRODUCTS[1], // Patchwork Denim Tote (Sold)
-        otherUser: ARTIST_USER,
+        otherUser: USER_NEHA,
         lastMessage: {
             id: 'm2', senderId: 'u1',
             text: 'Thanks for the quick shipping!',

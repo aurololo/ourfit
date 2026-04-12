@@ -11,9 +11,10 @@ interface ProductDetailProps {
   isWishlisted: boolean;
   onToggleWishlist: (id: string) => void;
   onViewProfile?: (user: User) => void;
+  onNavigateToShipping?: (p: Product) => void;
 }
 
-const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onChat, isWishlisted, onToggleWishlist, onViewProfile }) => {
+const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onChat, isWishlisted, onToggleWishlist, onViewProfile, onNavigateToShipping }) => {
   const [aiDescription, setAiDescription] = useState<string | null>(null);
   const [upcycleIdea, setUpcycleIdea] = useState<string | null>(null);
   const [loadingAi, setLoadingAi] = useState(false);
@@ -33,8 +34,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onChat, 
 
   const handleVibeCheck = async () => {
     setLoadingAi(true);
-    const desc = await generateVibeCheck(product.title, product.tags);
-    const idea = await suggestUpcycleIdea(product.title);
+    const [desc, idea] = await Promise.all([
+      generateVibeCheck(product.title, product.tags),
+      suggestUpcycleIdea(product.title),
+    ]);
     setAiDescription(desc);
     setUpcycleIdea(idea);
     setLoadingAi(false);
@@ -74,7 +77,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onChat, 
       setTimeout(() => {
         setShowUPI(false);
         setPaymentSuccess(false);
-        onBack();
+        if (onNavigateToShipping) {
+          onNavigateToShipping(product);
+        } else {
+          onBack();
+        }
       }, 3000);
     }, 2000);
   };
@@ -99,18 +106,20 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onChat, 
 
       {/* Top Nav */}
       <div className="fixed top-0 left-0 right-0 pt-safe px-4 pb-4 flex justify-between items-center z-40 bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
-        <button onClick={onBack} className="pointer-events-auto p-2 bg-black/50 backdrop-blur rounded-full border border-white/10 shadow-lg active:scale-90 transition-transform">
+        <button onClick={onBack} aria-label="Go back" className="pointer-events-auto p-2 bg-black/50 backdrop-blur rounded-full border border-white/10 shadow-lg active:scale-90 transition-transform">
           <ArrowLeft size={20} />
         </button>
         <div className="flex gap-3 pointer-events-auto">
           <button
             onClick={() => onToggleWishlist(product.id)}
+            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
             className="p-2 bg-black/50 backdrop-blur rounded-full border border-white/10 shadow-lg active:scale-90 transition-transform"
           >
             <Heart size={20} className={isWishlisted ? "fill-brand-orange text-brand-orange" : "text-white"} />
           </button>
           <button
             onClick={handleShare}
+            aria-label="Share this product"
             className="p-2 bg-black/50 backdrop-blur rounded-full border border-white/10 shadow-lg active:scale-90 transition-transform relative"
           >
             <Share2 size={20} />

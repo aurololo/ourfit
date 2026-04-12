@@ -53,13 +53,14 @@ function resolveInitialUser(auth: StoredAuth | null): User {
 // ────────────────────────────────────────────────────────────────────────────
 
 const AppContent: React.FC = () => {
-  // Always clear auth on load — onboarding must restart on every refresh (mock experience)
-  localStorage.removeItem(LS.AUTH);
-  const storedUploads = lsGet<Product[]>(LS.UPLOADS, []);
-
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeTab, setActiveTab] = useState('feed');
-  const [products, setProducts] = useState<Product[]>([...storedUploads, ...MOCK_PRODUCTS]);
+  const [products, setProducts] = useState<Product[]>(() => {
+    // Always clear auth on load — onboarding must restart on every refresh (mock experience)
+    localStorage.removeItem(LS.AUTH);
+    const storedUploads = lsGet<Product[]>(LS.UPLOADS, []);
+    return [...storedUploads, ...MOCK_PRODUCTS];
+  });
   const [currentUser, setCurrentUser] = useState<User>(MOCK_USER);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [chatProduct, setChatProduct] = useState<Product | null>(null);
@@ -243,6 +244,10 @@ const AppContent: React.FC = () => {
         isWishlisted={wishlistIds.has(selectedProduct.id)}
         onToggleWishlist={(id) => handleToggleWishlist(null, id)}
         onViewProfile={handleViewProfile}
+        onNavigateToShipping={(p) => {
+          setSelectedProduct(null);
+          setShippingProduct(p);
+        }}
       />
     );
   }
