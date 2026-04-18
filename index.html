@@ -2,7 +2,7 @@
 <html lang="en" class="dark">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#0A0A0A" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -11,7 +11,7 @@
     <link rel="apple-touch-icon" href="/icon.svg" />
     <title>ourFIT</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Archivo:wght@400;600;800;900&family=Archivo+Black&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         darkMode: 'class',
@@ -21,6 +21,10 @@
               sans: ['Inter', 'sans-serif'],
               display: ['Space Grotesk', 'sans-serif'],
               mono: ['Space Mono', 'monospace'],
+              archivo: ['"Archivo Black"', 'Archivo', 'sans-serif'],
+              'archivo-body': ['Archivo', 'sans-serif'],
+              serif: ['"Instrument Serif"', 'serif'],
+              'jet': ['"JetBrains Mono"', 'monospace'],
             },
             colors: {
               brand: {
@@ -181,6 +185,41 @@
         to   { opacity: 1; transform: translateX(0); }
       }
       .page-enter { animation: page-slide-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+      /* ── New design keyframes ────────────────────── */
+      @keyframes marq {
+        0%   { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+      @keyframes marq-rev {
+        0%   { transform: translateX(-50%); }
+        100% { transform: translateX(0); }
+      }
+      @keyframes spin-slow {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(360deg); }
+      }
+      @keyframes flicker {
+        0%, 100% { opacity: 1; }
+        50%      { opacity: 0.4; }
+      }
+      @keyframes blob-morph {
+        0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: translate(0,0) rotate(0deg); }
+        33%       { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; transform: translate(8px,-12px) rotate(4deg); }
+        66%       { border-radius: 50% 60% 30% 60% / 40% 50% 70% 50%; transform: translate(-6px,8px) rotate(-3deg); }
+      }
+      @keyframes enter-up {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      .enter { animation: enter-up 0.45s cubic-bezier(.22,1,.36,1) forwards; }
+      .spin-slow { animation: spin-slow 14s linear infinite; }
+      .blob-a { animation: blob-morph 11s ease-in-out infinite; }
+      .no-scroll::-webkit-scrollbar { display: none; }
+      .no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+      @media (prefers-reduced-motion: reduce) {
+        .spin-slow, .blob-a, .enter, .marquee-inner { animation: none !important; }
+      }
     </style>
 <link rel="stylesheet" href="/index.css">
 </head>

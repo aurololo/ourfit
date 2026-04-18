@@ -1,90 +1,108 @@
 import React from 'react';
-import { Home, Search, Plus, MessageSquare, User } from 'lucide-react';
+import { Icons } from './ui';
 
 interface NavbarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   unreadCount?: number;
+  accent?: string;
+  dark?: boolean;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabChange, unreadCount = 0 }) => {
-  const iconSize = 22;
+const Navbar: React.FC<NavbarProps> = ({
+  activeTab, onTabChange, unreadCount = 0, accent = '#FF6B35', dark = true,
+}) => {
+  const bg   = dark ? 'rgba(14,14,14,0.88)' : 'rgba(250,246,236,0.94)';
+  const fg   = dark ? '#FAF6EC' : '#0A0A0A';
+  const mute = dark ? 'rgba(250,246,236,0.38)' : 'rgba(10,10,10,0.38)';
+
+  const tabs = [
+    { k: 'feed',    Icon: Icons.Home,   label: 'FEED' },
+    { k: 'search',  Icon: Icons.Search, label: 'FIND' },
+    { k: 'upload',  Icon: Icons.Plus,   label: 'DROP' },
+    { k: 'chat',    Icon: Icons.Chat,   label: 'DM' },
+    { k: 'profile', Icon: Icons.User,   label: 'YOU' },
+  ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 px-4 pointer-events-none" style={{ paddingBottom: 'max(1.75rem, calc(env(safe-area-inset-bottom) + 0.5rem))' }}>
-      <div className="max-w-md mx-auto flex justify-center">
-        <nav
-          className="glass-panel rounded-full flex items-center gap-1 px-4 py-2.5 pointer-events-auto"
-          style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.07)' }}
-        >
-          {/* Feed */}
-          <button
-            onClick={() => onTabChange('feed')}
-            aria-label="Feed"
-            className={`p-3 rounded-full transition-all duration-200 active:scale-90 ${
-              activeTab === 'feed'
-                ? 'text-brand-orange bg-brand-orange/10'
-                : 'text-gray-500 hover:text-gray-300'
-            }`}
-          >
-            <Home size={iconSize} strokeWidth={activeTab === 'feed' ? 2.5 : 1.5} />
-          </button>
+    <div style={{
+      position: 'fixed', bottom: 18, left: '50%', transform: 'translateX(-50%)',
+      width: 'calc(100% - 20px)', maxWidth: 430, zIndex: 30,
+      padding: '0 10px',
+      pointerEvents: 'none',
+    }}>
+      <nav style={{
+        background: bg,
+        backdropFilter: 'blur(28px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+        border: dark ? '1px solid rgba(255,255,255,0.09)' : '1px solid rgba(10,10,10,0.09)',
+        borderRadius: 32, padding: '10px 8px',
+        display: 'flex', justifyContent: 'space-around', alignItems: 'center',
+        boxShadow: '0 12px 30px rgba(0,0,0,0.45)',
+        pointerEvents: 'auto',
+      }}>
+        {tabs.map(({ k, Icon, label }) => {
+          const on = activeTab === k;
+          const isUpload = k === 'upload';
 
-          {/* Discover */}
-          <button
-            onClick={() => onTabChange('search')}
-            aria-label="Discover"
-            className={`p-3 rounded-full transition-all duration-200 active:scale-90 ${
-              activeTab === 'search'
-                ? 'text-brand-orange bg-brand-orange/10'
-                : 'text-gray-500 hover:text-gray-300'
-            }`}
-          >
-            <Search size={iconSize} strokeWidth={activeTab === 'search' ? 2.5 : 1.5} />
-          </button>
+          if (isUpload) {
+            return (
+              <button
+                key={k}
+                onClick={() => onTabChange(k)}
+                style={{
+                  width: 52, height: 52, borderRadius: '50%',
+                  background: accent, color: '#0A0A0A',
+                  border: '2px solid #0A0A0A', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  marginTop: -22,
+                  boxShadow: `0 6px 22px ${accent}99`,
+                  transition: 'transform .2s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.transform = 'rotate(90deg) scale(1.08)')}
+                onMouseLeave={e => (e.currentTarget.style.transform = 'rotate(0) scale(1)')}
+              >
+                <Icon width={26} height={26} strokeWidth={2.5} />
+              </button>
+            );
+          }
 
-          {/* Center Upload — elevated */}
-          <button
-            onClick={() => onTabChange('upload')}
-            aria-label="Upload"
-            className="mx-2 w-14 h-14 bg-brand-orange rounded-full flex items-center justify-center active:scale-90 transition-transform flex-shrink-0"
-            style={{ boxShadow: '0 0 28px rgba(255,107,53,0.65), 0 4px 16px rgba(0,0,0,0.5)' }}
-          >
-            <Plus size={28} strokeWidth={2.5} className="text-black" />
-          </button>
-
-          {/* DMs with badge */}
-          <button
-            onClick={() => onTabChange('chat')}
-            aria-label="Messages"
-            className={`relative p-3 rounded-full transition-all duration-200 active:scale-90 ${
-              activeTab === 'chat'
-                ? 'text-brand-orange bg-brand-orange/10'
-                : 'text-gray-500 hover:text-gray-300'
-            }`}
-          >
-            <MessageSquare size={iconSize} strokeWidth={activeTab === 'chat' ? 2.5 : 1.5} />
-            {unreadCount > 0 && (
-              <span className="absolute top-2.5 right-2.5 min-w-[14px] h-3.5 bg-brand-orange rounded-full flex items-center justify-center text-[8px] font-bold text-black px-0.5 leading-none pointer-events-none">
-                {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
-            )}
-          </button>
-
-          {/* Profile */}
-          <button
-            onClick={() => onTabChange('profile')}
-            aria-label="Profile"
-            className={`p-3 rounded-full transition-all duration-200 active:scale-90 ${
-              activeTab === 'profile'
-                ? 'text-brand-orange bg-brand-orange/10'
-                : 'text-gray-500 hover:text-gray-300'
-            }`}
-          >
-            <User size={iconSize} strokeWidth={activeTab === 'profile' ? 2.5 : 1.5} />
-          </button>
-        </nav>
-      </div>
+          return (
+            <button
+              key={k}
+              onClick={() => onTabChange(k)}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center',
+                color: on ? fg : mute, padding: '6px 10px', position: 'relative',
+              }}
+            >
+              {on && (
+                <div style={{
+                  position: 'absolute', top: -2,
+                  width: 5, height: 5, borderRadius: '50%', background: accent,
+                }} />
+              )}
+              <Icon width={22} height={22} />
+              <span style={{
+                fontFamily: '"JetBrains Mono", monospace',
+                fontSize: 8, fontWeight: 700, letterSpacing: '0.1em',
+              }}>{label}</span>
+              {k === 'chat' && unreadCount > 0 && (
+                <span style={{
+                  position: 'absolute', top: 4, right: 6,
+                  minWidth: 14, height: 14, padding: '0 3px',
+                  borderRadius: 7, background: accent, color: '#0A0A0A',
+                  fontFamily: '"Archivo Black", sans-serif', fontSize: 8,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </nav>
     </div>
   );
 };

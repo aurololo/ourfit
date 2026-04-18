@@ -7,6 +7,7 @@ import ChatInterface from './views/ChatInterface';
 import Discovery from './views/Discovery';
 import UploadFlow from './views/UploadFlow';
 import Profile from './views/Profile';
+import ArtistProfile from './views/ArtistProfile';
 import MessagesList from './views/MessagesList';
 import Onboarding from './views/Onboarding';
 import ShippingPage from './views/ShippingPage';
@@ -26,6 +27,21 @@ const LS = {
   AUTH: 'ourfit_auth',
   UPLOADS: 'ourfit_uploads',
   WISHLIST: 'ourfit_wishlist',
+  TWEAKS: 'ourfit_tweaks',
+};
+
+interface Tweaks {
+  accent: string;
+  dark: boolean;
+  motion: boolean;
+  profileLayout: 'grid' | 'cards' | 'zine';
+}
+
+const DEFAULT_TWEAKS: Tweaks = {
+  accent: '#FF6B35',
+  dark: true,
+  motion: true,
+  profileLayout: 'grid',
 };
 
 function lsGet<T>(key: string, fallback: T): T {
@@ -77,6 +93,8 @@ const AppContent: React.FC = () => {
     new Set(lsGet<string[]>(LS.WISHLIST, []))
   );
   const [viewingUser, setViewingUser] = useState<User | null>(null);
+  const [tweaks] = useState<Tweaks>(() => lsGet<Tweaks>(LS.TWEAKS, DEFAULT_TWEAKS));
+  const { accent, dark, motion, profileLayout } = tweaks;
   const [chatSessions, setChatSessions] = useState(() =>
     MOCK_CHATS.map(s => ({
       ...s,
@@ -228,6 +246,20 @@ const AppContent: React.FC = () => {
   }
 
   if (viewingUser) {
+    if (viewingUser.role === 'ARTIST') {
+      return (
+        <ArtistProfile
+          user={viewingUser}
+          products={products}
+          onBack={handleBackFromProfile}
+          onProductSelect={handleProductSelect}
+          onDmUser={handleDmUser}
+          accent={accent}
+          dark={dark}
+          motion={motion}
+        />
+      );
+    }
     return (
       <Profile
         user={viewingUser}
@@ -237,6 +269,9 @@ const AppContent: React.FC = () => {
         isOwnProfile={false}
         onBack={handleBackFromProfile}
         onDmUser={handleDmUser}
+        accent={accent}
+        dark={dark}
+        layout={profileLayout}
       />
     );
   }
@@ -252,6 +287,8 @@ const AppContent: React.FC = () => {
         onBack={handleBackFromChat}
         onNavigateToShipping={handleNavigateToShipping}
         onViewProfile={handleViewProfile}
+        accent={accent}
+        dark={dark}
       />
     );
   }
@@ -269,6 +306,9 @@ const AppContent: React.FC = () => {
           setSelectedProduct(null);
           setShippingProduct(p);
         }}
+        accent={accent}
+        dark={dark}
+        motion={motion}
       />
     );
   }
@@ -284,6 +324,9 @@ const AppContent: React.FC = () => {
             onProductSelect={handleProductSelect}
             onToggleWishlist={handleToggleWishlist}
             onViewProfile={handleViewProfile}
+            accent={accent}
+            dark={dark}
+            motion={motion}
           />
         )}
 
@@ -296,6 +339,8 @@ const AppContent: React.FC = () => {
             sessions={chatSessions}
             onSelectSession={(product) => setChatProduct(product)}
             onViewProfile={handleViewProfile}
+            accent={accent}
+            dark={dark}
           />
         )}
 
@@ -306,10 +351,13 @@ const AppContent: React.FC = () => {
             wishlistIds={wishlistIds}
             onProductSelect={handleProductSelect}
             isOwnProfile={true}
+            accent={accent}
+            dark={dark}
+            layout={profileLayout}
           />
         )}
 
-        <Navbar activeTab={activeTab} onTabChange={handleTabChange} unreadCount={totalUnread} />
+        <Navbar activeTab={activeTab} onTabChange={handleTabChange} unreadCount={totalUnread} accent={accent} dark={dark} />
       </div>
     </div>
   );
