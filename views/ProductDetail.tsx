@@ -6,7 +6,7 @@ import { Icons } from '../components/ui';
 interface ProductDetailProps {
   product: Product;
   onBack: () => void;
-  onChat: (product: Product) => void;
+  onChat: (product: Product, offerAmount?: number) => void;
   isWishlisted: boolean;
   onToggleWishlist: (id: string) => void;
   onViewProfile: (user: User) => void;
@@ -17,13 +17,14 @@ interface ProductDetailProps {
 }
 
 const ProductDetail: React.FC<ProductDetailProps> = ({
-  product: p, onBack, onChat, isWishlisted, onToggleWishlist, onViewProfile,
+  product: p, onBack, onChat, isWishlisted, onToggleWishlist, onViewProfile, onNavigateToShipping,
   accent = '#FF6B35', dark = true, motion = true,
 }) => {
   const [liked, setLiked]       = useState(isWishlisted);
   const [zoom, setZoom]         = useState(false);
   const [offer, setOffer]       = useState(false);
   const [offerVal, setOfferVal] = useState(Math.round(p.price * 0.88));
+  const [showUpi, setShowUpi]   = useState(false);
 
   const fg   = dark ? '#FAF6EC' : '#0A0A0A';
   const bg   = dark ? '#0A0A0A' : '#F2EAD8';
@@ -206,7 +207,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({
             <input type="range" min={Math.round(p.price * 0.5)} max={p.price} value={offerVal}
               onChange={e => setOfferVal(+e.target.value)}
               style={{ width: '100%', accentColor: accent, marginTop: 8 }} />
-            <MagButton onClick={() => onChat(p)} style={{
+            <MagButton onClick={() => onChat(p, offerVal)} style={{
               width: '100%', marginTop: 10, height: 48, borderRadius: 24,
               background: accent, color: '#0A0A0A', border: 'none',
               fontFamily: '"Archivo Black", sans-serif', fontSize: 13,
@@ -214,25 +215,83 @@ const ProductDetail: React.FC<ProductDetailProps> = ({
             }}>send offer →</MagButton>
           </div>
         ) : (
-          <div style={{ display: 'flex', gap: 8 }}>
-            <MagButton onClick={() => setOffer(true)} style={{
-              flex: 1, height: 56, borderRadius: 28,
-              background: 'transparent', color: fg, border: `1.5px solid ${fg}35`,
-              fontFamily: '"Archivo Black", sans-serif', fontSize: 13,
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <MagButton onClick={() => setOffer(true)} style={{
+                flex: 1, height: 50, borderRadius: 25,
+                background: 'transparent', color: fg, border: `1.5px solid ${fg}35`,
+                fontFamily: '"Archivo Black", sans-serif', fontSize: 12,
+                letterSpacing: '0.06em', textTransform: 'uppercase', cursor: 'pointer',
+              }}>make offer</MagButton>
+              <MagButton onClick={() => onChat(p)} style={{
+                flex: 1, height: 50, borderRadius: 25,
+                background: `${fg}12`, color: fg, border: `1.5px solid ${fg}30`,
+                fontFamily: '"Archivo Black", sans-serif', fontSize: 12,
+                letterSpacing: '0.06em', textTransform: 'uppercase', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              }}>
+                <Icons.Send width={15} height={15} /> dm seller
+              </MagButton>
+            </div>
+            <MagButton onClick={() => setShowUpi(true)} style={{
+              width: '100%', height: 56, borderRadius: 28,
+              background: '#CCFF00', color: '#0A0A0A', border: 'none',
+              fontFamily: '"Archivo Black", sans-serif', fontSize: 14,
               letterSpacing: '0.06em', textTransform: 'uppercase', cursor: 'pointer',
-            }}>make offer</MagButton>
-            <MagButton onClick={() => onChat(p)} style={{
-              flex: 1.3, height: 56, borderRadius: 28,
-              background: accent, color: '#0A0A0A', border: 'none',
-              fontFamily: '"Archivo Black", sans-serif', fontSize: 13,
-              letterSpacing: '0.06em', textTransform: 'uppercase', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            }}>
-              <Icons.Send width={18} height={18} /> dm {p.owner.handle.split('.')[0]}
-            </MagButton>
+            }}>BUY NOW · ₹{(p.price / 1000).toFixed(1)}k</MagButton>
           </div>
         )}
       </div>
+
+      {/* UPI Payment modal */}
+      {showUpi && (
+        <div onClick={() => setShowUpi(false)} style={{
+          position: 'fixed', inset: 0, zIndex: 100,
+          background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)',
+          display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+        }}>
+          <div onClick={e => e.stopPropagation()} style={{
+            background: dark ? '#0F0F0F' : '#FAF6EC',
+            borderRadius: '28px 28px 0 0', padding: '6px 20px 44px',
+            border: `1px solid ${fg}15`,
+          }}>
+            <div style={{ width: 40, height: 4, background: `${fg}30`, borderRadius: 2, margin: '12px auto 20px' }} />
+            <div style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: 10, letterSpacing: '0.14em', opacity: 0.5, marginBottom: 6 }}>◆ SECURE CHECKOUT</div>
+            <div style={{ fontFamily: '"Archivo Black", sans-serif', fontSize: 32, letterSpacing: '-0.03em', color: fg }}>
+              ₹{p.price.toLocaleString('en-IN')}
+            </div>
+            <div style={{ fontFamily: '"Instrument Serif", serif', fontStyle: 'italic', fontSize: 14, opacity: 0.6, marginBottom: 20, color: fg }}>
+              {p.title}
+            </div>
+            <div style={{ background: `${fg}08`, borderRadius: 14, padding: '12px 14px', marginBottom: 20, border: `1px solid ${fg}12` }}>
+              <div style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: 9, opacity: 0.5, letterSpacing: '0.1em', color: fg }}>UPI ID</div>
+              <div style={{ fontFamily: '"Archivo", sans-serif', fontWeight: 800, fontSize: 16, marginTop: 4, color: fg }}>ourfit@upi</div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {[
+                { label: 'GPay', color: '#1A73E8', icon: '◈' },
+                { label: 'PhonePe', color: '#5F259F', icon: '◉' },
+                { label: 'Paytm', color: '#002970', icon: '◎' },
+              ].map(({ label, color, icon }) => (
+                <button key={label} onClick={() => { setShowUpi(false); onNavigateToShipping(p); }} style={{
+                  height: 52, borderRadius: 14, background: `${color}18`,
+                  border: `1.5px solid ${color}55`, color: fg, cursor: 'pointer',
+                  fontFamily: '"Archivo", sans-serif', fontWeight: 800, fontSize: 14,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                }}>
+                  <span style={{ fontSize: 20 }}>{icon}</span> Pay with {label}
+                </button>
+              ))}
+              <button onClick={() => { setShowUpi(false); onNavigateToShipping(p); }} style={{
+                height: 56, borderRadius: 16, marginTop: 4,
+                background: '#CCFF00', color: '#0A0A0A', border: 'none', cursor: 'pointer',
+                fontFamily: '"Archivo Black", sans-serif', fontSize: 14,
+                letterSpacing: '0.06em', textTransform: 'uppercase',
+              }}>◆ CONFIRM PAYMENT</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

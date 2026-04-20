@@ -53,8 +53,12 @@ const FeedItem: React.FC<FeedItemProps> = ({ product, onClick, onProfileClick, i
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       onClick={() => onClick(product)}
-      className="brutalist-card mb-4 break-inside-avoid overflow-hidden rounded-none relative group cursor-pointer active:scale-[0.97] transition-transform duration-150"
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(product); } }}
+      aria-label={`${product.title} by @${product.owner.handle}, ₹${product.price}`}
+      className="brutalist-card mb-4 break-inside-avoid overflow-hidden rounded-none relative group cursor-pointer active:scale-[0.97] transition-transform duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange"
     >
       <div className="relative bg-gray-900 group" style={{ aspectRatio }}>
         {/* Skeleton Loader */}

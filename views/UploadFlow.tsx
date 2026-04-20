@@ -287,7 +287,19 @@ const UploadFlow: React.FC<UploadFlowProps> = ({ onClose, onSuccess, currentUser
                     <div className="relative mb-4">
                         <div
                             ref={sliderRef}
-                            className="relative w-full h-20 bg-[#222] rounded-xl overflow-hidden border border-brand-orange/50 shadow-[0_0_15px_rgba(255,107,53,0.2)] select-none touch-none"
+                            role="slider"
+                            tabIndex={0}
+                            aria-label="Swipe to list your item"
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                            aria-valuenow={sliderRef.current ? Math.round((sliderX / (sliderRef.current.offsetWidth - 80)) * 100) : 0}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    handlePost();
+                                }
+                            }}
+                            className="relative w-full h-20 bg-[#222] rounded-xl overflow-hidden border border-brand-orange/50 shadow-[0_0_15px_rgba(255,107,53,0.2)] select-none touch-none focus-visible:ring-2 focus-visible:ring-brand-orange"
                             onPointerDown={handlePointerDown}
                             onPointerMove={handlePointerMove}
                             onPointerUp={handlePointerUp}

@@ -10,10 +10,32 @@ interface ChatInterfaceProps {
   onViewProfile: (user: User) => void;
   accent?: string;
   dark?: boolean;
+  initialOfferAmount?: number;
 }
 
+const buildInitialMessages = (p: Product, seller: User, offerAmount?: number): ChatMessage[] => {
+  const base: ChatMessage[] = [
+    { id: '1', senderId: seller.id, text: `yo, interested in the ${p.title.toLowerCase()}?`, type: 'TEXT', timestamp: new Date(Date.now() - 12 * 60000) },
+    { id: '2', senderId: 'me', text: 'yes!! is it still available?', type: 'TEXT', timestamp: new Date(Date.now() - 10 * 60000) },
+    { id: '3', senderId: seller.id, text: 'for you, yes ◆', type: 'TEXT', timestamp: new Date(Date.now() - 9 * 60000) },
+  ];
+  if (offerAmount) {
+    return [...base, {
+      id: '4', senderId: 'me',
+      text: `my offer: ₹${offerAmount.toLocaleString('en-IN')}`,
+      type: 'OFFER' as const,
+      offerAmount,
+      timestamp: new Date(Date.now() - 60000),
+    }];
+  }
+  return [...base,
+    { id: '4', senderId: 'me', text: `how firm are you on ₹${p.price.toLocaleString('en-IN')}?`, type: 'TEXT', timestamp: new Date(Date.now() - 8 * 60000) },
+    { id: '5', senderId: seller.id, text: `I can do ₹${Math.round(p.price * 0.94).toLocaleString('en-IN')} if you pick up today.`, type: 'TEXT', timestamp: new Date(Date.now() - 6 * 60000) },
+  ];
+};
+
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
-  product: p, onBack, onViewProfile, accent = '#FF6B35', dark = true,
+  product: p, onBack, onViewProfile, accent = '#FF6B35', dark = true, initialOfferAmount,
 }) => {
   const seller    = p.owner;
   const sellerAv  = seller.avatar || avatarFor(seller.name, colorFor(seller.id));
@@ -22,33 +44,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const bg        = dark ? '#0A0A0A' : '#F2EAD8';
   const card      = dark ? '#141414' : '#FAF6EC';
 
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: '1', senderId: seller.id,
-      text: `yo, interested in the ${p.title.toLowerCase()}?`,
-      type: 'TEXT', timestamp: new Date(Date.now() - 18 * 60000),
-    },
-    {
-      id: '2', senderId: 'me',
-      text: 'yes!! is it still available?',
-      type: 'TEXT', timestamp: new Date(Date.now() - 16 * 60000),
-    },
-    {
-      id: '3', senderId: seller.id,
-      text: 'for you, yes ◆',
-      type: 'TEXT', timestamp: new Date(Date.now() - 16 * 60000),
-    },
-    {
-      id: '4', senderId: 'me',
-      text: `how firm are you on ₹${p.price.toLocaleString('en-IN')}?`,
-      type: 'TEXT', timestamp: new Date(Date.now() - 10 * 60000),
-    },
-    {
-      id: '5', senderId: seller.id,
-      text: `I can do ₹${Math.round(p.price * 0.94).toLocaleString('en-IN')} if you pick up today.`,
-      type: 'TEXT', timestamp: new Date(Date.now() - 8 * 60000),
-    },
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>(() =>
+    buildInitialMessages(p, seller, initialOfferAmount)
+  );
   const [draft,   setDraft]   = useState('');
   const [typing,  setTyping]  = useState(false);
   const [loading, setLoading] = useState(false);
@@ -57,6 +55,26 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, typing]);
+
+  // Auto-respond to an initial offer placed from ProductDetail
+  useEffect(() => {
+    if (!initialOfferAmount) return;
+    const initMsgs = buildInitialMessages(p, seller, initialOfferAmount);
+    setTyping(true);
+    (async () => {
+      try {
+        const reply = await generateSellerChat(p, seller, initMsgs, '');
+        const replyText = typeof reply === 'string' ? reply : (reply?.text ?? 'sure, lmk!');
+        await new Promise(r => setTimeout(r, 700));
+        setMessages(prev => [...prev, { id: Date.now().toString(), senderId: seller.id, text: replyText, type: 'TEXT', timestamp: new Date() }]);
+      } catch {
+        setMessages(prev => [...prev, { id: Date.now().toString(), senderId: seller.id, text: 'sure, lmk!', type: 'TEXT', timestamp: new Date() }]);
+      } finally {
+        setTyping(false);
+      }
+    })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Simulate typing then AI response
   const simulateReply = async (userText: string) => {
@@ -156,13 +174,26 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               display: 'flex', flexDirection: 'column', gap: 2,
               alignItems: mine ? 'flex-end' : 'flex-start', position: 'relative',
             }}>
-              <div style={{
-                padding: '9px 14px',
-                background: mine ? accent : card,
-                color: mine ? '#0A0A0A' : fg,
-                borderRadius: mine ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-                fontSize: 14, lineHeight: 1.25, fontWeight: mine ? 600 : 500,
-              }}>{m.text}</div>
+              {m.type === 'OFFER' ? (
+                <div style={{
+                  padding: '12px 14px', background: mine ? accent : card,
+                  color: mine ? '#0A0A0A' : fg,
+                  borderRadius: mine ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+                  border: `2px solid ${mine ? 'rgba(0,0,0,0.15)' : accent + '44'}`,
+                }}>
+                  <div style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: 8, letterSpacing: '0.14em', opacity: 0.7, marginBottom: 4 }}>◆ OFFER SENT</div>
+                  <div style={{ fontFamily: '"Archivo Black", sans-serif', fontSize: 22, lineHeight: 1 }}>₹{m.offerAmount?.toLocaleString('en-IN')}</div>
+                  <div style={{ fontFamily: '"Instrument Serif", serif', fontStyle: 'italic', fontSize: 11, opacity: 0.65, marginTop: 3 }}>awaiting response...</div>
+                </div>
+              ) : (
+                <div style={{
+                  padding: '9px 14px',
+                  background: mine ? accent : card,
+                  color: mine ? '#0A0A0A' : fg,
+                  borderRadius: mine ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+                  fontSize: 14, lineHeight: 1.25, fontWeight: mine ? 600 : 500,
+                }}>{m.text}</div>
+              )}
               <span style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: 8, opacity: 0.45, letterSpacing: '0.08em', marginTop: 2 }}>
                 {fmtTime(new Date(m.timestamp))}{mine ? ' · READ' : ''}
               </span>

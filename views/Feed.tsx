@@ -74,6 +74,11 @@ const Feed: React.FC<FeedProps> = ({
     return out;
   }, [products]);
 
+  const commissionUser = useMemo(() => {
+    const found = products.find(p => p.owner.role === 'ARTIST');
+    return (found ?? products[0])?.owner ?? null;
+  }, [products]);
+
   return (
     <div style={{
       position: 'absolute', inset: 0, background: bg, color: fg,
@@ -88,10 +93,9 @@ const Feed: React.FC<FeedProps> = ({
         borderBottom: `1px solid ${fg}14`,
       }}>
         <div style={{ padding: '8px 18px 6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-            <span style={{ fontFamily: '"Archivo Black", sans-serif', fontSize: 22, letterSpacing: '-0.04em' }}>our</span>
-            <span style={{ color: accent, fontFamily: '"Archivo Black", sans-serif', fontSize: 22, letterSpacing: '-0.04em' }}>/fit</span>
-            <span style={{ fontFamily: '"Instrument Serif", serif', fontStyle: 'italic', fontSize: 14, opacity: 0.6, marginLeft: 3 }}>blr</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <img src="/OF_Logo.png" alt="OurFit" style={{ height: 42, objectFit: 'contain' }} />
+            <span style={{ fontFamily: '"Instrument Serif", serif', fontStyle: 'italic', fontSize: 14, opacity: 0.6 }}>blr</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <span style={{
@@ -123,9 +127,9 @@ const Feed: React.FC<FeedProps> = ({
             return (
               <button key={c} onClick={() => setCat(c)} style={{
                 flexShrink: 0, padding: '7px 14px',
-                background: on ? fg : 'transparent', color: on ? bg : fg,
+                background: on ? fg : `${fg}10`, color: on ? bg : fg,
                 fontFamily: '"Archivo", sans-serif', fontWeight: 800, fontSize: 11,
-                letterSpacing: '0.06em', border: `1.5px solid ${on ? fg : fg + '28'}`,
+                letterSpacing: '0.06em', border: `1.5px solid ${on ? fg : fg + '55'}`,
                 borderRadius: 999, transform: `rotate(${on ? 0 : r}deg)`,
                 cursor: 'pointer', transition: 'all .2s',
               }}>{c}</button>
@@ -216,10 +220,11 @@ const Feed: React.FC<FeedProps> = ({
             }
             if (entry.type === 'commission') {
               return (
-                <div key={'c' + i} style={{
+                <div key={'c' + i} onClick={() => commissionUser && onViewProfile(commissionUser)} style={{
                   gridColumn: '1 / -1', padding: '16px', background: '#0A0A0A',
                   color: '#CCFF00', border: '1px solid #CCFF00', borderRadius: 14,
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  cursor: 'pointer',
                 }}>
                   <div>
                     <div style={{ fontFamily: '"Archivo Black", sans-serif', fontSize: 20, textTransform: 'uppercase', letterSpacing: '-0.02em' }}>

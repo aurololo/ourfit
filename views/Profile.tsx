@@ -10,16 +10,20 @@ interface ProfileProps {
   isOwnProfile: boolean;
   onBack?: () => void;
   onDmUser?: (user: User) => void;
+  onEditProfile?: (updates: Partial<User>) => void;
   accent?: string;
   dark?: boolean;
   layout?: 'grid' | 'cards' | 'zine';
 }
 
 const Profile: React.FC<ProfileProps> = ({
-  user, products, wishlistIds, onProductSelect, isOwnProfile, onBack, onDmUser,
+  user, products, wishlistIds, onProductSelect, isOwnProfile, onBack, onDmUser, onEditProfile,
   accent = '#FF6B35', dark = true, layout = 'grid',
 }) => {
   const [tab, setTab] = useState<'collected' | 'wishlist' | 'listed'>('collected');
+  const [showSettings, setShowSettings] = useState(false);
+  const [settingsName, setSettingsName] = useState(user.name);
+  const [settingsBio, setSettingsBio] = useState(user.bio || '');
   const fg   = dark ? '#FAF6EC' : '#0A0A0A';
   const bg   = dark ? '#0A0A0A' : '#F2EAD8';
   const card = dark ? '#141414' : '#FAF6EC';
@@ -49,7 +53,9 @@ const Profile: React.FC<ProfileProps> = ({
                 @{user.handle}
               </span>
             )}
-            <Icons.Settings width={20} height={20} style={{ opacity: 0.5 }} />
+            <button onClick={() => { setSettingsName(user.name); setSettingsBio(user.bio || ''); setShowSettings(true); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: fg, opacity: 0.6, padding: 4, display: 'flex', alignItems: 'center' }}>
+              <Icons.Settings width={20} height={20} />
+            </button>
           </div>
 
           <div style={{ marginTop: 18, display: 'flex', gap: 16, alignItems: 'flex-start' }}>
@@ -244,6 +250,48 @@ const Profile: React.FC<ProfileProps> = ({
 
         <div style={{ height: 30 }} />
       </div>
+
+      {/* Settings modal */}
+      {showSettings && (
+        <div onClick={() => setShowSettings(false)} style={{
+          position: 'fixed', inset: 0, zIndex: 100,
+          background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)',
+          display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+        }}>
+          <div onClick={e => e.stopPropagation()} style={{
+            background: dark ? '#0F0F0F' : '#FAF6EC',
+            borderRadius: '28px 28px 0 0', padding: '6px 20px 44px',
+            border: `1px solid ${fg}15`,
+          }}>
+            <div style={{ width: 40, height: 4, background: `${fg}30`, borderRadius: 2, margin: '12px auto 20px' }} />
+            <div style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: 10, letterSpacing: '0.14em', opacity: 0.5, marginBottom: 20, color: fg }}>◆ EDIT PROFILE</div>
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: 9, opacity: 0.5, letterSpacing: '0.1em', marginBottom: 6, color: fg }}>DISPLAY NAME</div>
+              <input value={settingsName} onChange={e => setSettingsName(e.target.value)} style={{
+                width: '100%', background: `${fg}08`, border: `1px solid ${fg}20`,
+                borderRadius: 12, padding: '12px 14px', color: fg,
+                fontFamily: '"Archivo", sans-serif', fontWeight: 800, fontSize: 15,
+                outline: 'none', boxSizing: 'border-box',
+              }} />
+            </div>
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: 9, opacity: 0.5, letterSpacing: '0.1em', marginBottom: 6, color: fg }}>BIO</div>
+              <textarea value={settingsBio} onChange={e => setSettingsBio(e.target.value)} rows={3} style={{
+                width: '100%', background: `${fg}08`, border: `1px solid ${fg}20`,
+                borderRadius: 12, padding: '12px 14px', color: fg,
+                fontFamily: '"Instrument Serif", serif', fontStyle: 'italic', fontSize: 14,
+                outline: 'none', resize: 'none', boxSizing: 'border-box',
+              }} />
+            </div>
+            <button onClick={() => { onEditProfile?.({ name: settingsName, bio: settingsBio }); setShowSettings(false); }} style={{
+              width: '100%', height: 52, borderRadius: 16,
+              background: fg, color: bg, border: 'none', cursor: 'pointer',
+              fontFamily: '"Archivo Black", sans-serif', fontSize: 13,
+              letterSpacing: '0.06em', textTransform: 'uppercase',
+            }}>SAVE CHANGES</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

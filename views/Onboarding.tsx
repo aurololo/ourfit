@@ -214,18 +214,23 @@ const Onboarding: React.FC<OnboardingProps> = ({ onLogin }) => {
 
                 {isIntro && stepData && (
                     <>
-                        <div className="mb-10 relative">
-                            <div className="absolute inset-0 bg-brand-neon/20 blur-2xl rounded-full scale-150 animate-pulse" />
-                            <div className="relative z-10 p-5 border-2 border-brand-neon/40 rounded-full bg-black/40 backdrop-blur-sm shadow-[0_0_30px_rgba(204,255,0,0.3)]">
-                                {stepData.icon}
-                            </div>
-                        </div>
+                        {stepData.id === 'intro' ? (
+                            <img src="/OF_Logo.png" alt="OurFit" className="mb-8 drop-shadow-lg mx-auto" style={{ height: 96, objectFit: 'contain' }} />
+                        ) : (
+                            <>
+                                <div className="mb-10 relative">
+                                    <div className="absolute inset-0 bg-brand-neon/20 blur-2xl rounded-full scale-150 animate-pulse" />
+                                    <div className="relative z-10 p-5 border-2 border-brand-neon/40 rounded-full bg-black/40 backdrop-blur-sm shadow-[0_0_30px_rgba(204,255,0,0.3)]">
+                                        {stepData.icon}
+                                    </div>
+                                </div>
+                                <h1 className="text-6xl font-archivo font-bold uppercase tracking-tighter leading-[0.9] mb-4 text-white drop-shadow-lg whitespace-pre-line">
+                                    {stepData.title}
+                                </h1>
+                            </>
+                        )}
 
-                        <h1 className="text-6xl font-display font-bold uppercase tracking-tighter leading-[0.9] mb-4 text-white drop-shadow-lg whitespace-pre-line">
-                            {stepData.title}
-                        </h1>
-
-                        <h2 className="text-xs font-mono font-bold uppercase tracking-widest bg-brand-neon text-black px-3 py-1 mb-5 transform -rotate-2 shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
+                        <h2 className="text-xs font-jet font-bold uppercase tracking-widest bg-brand-neon text-black px-3 py-1 mb-5 transform -rotate-2 shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
                             {stepData.headline}
                         </h2>
 
@@ -237,7 +242,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onLogin }) => {
 
                 {isRoleSelect && (
                     <>
-                        <h1 className="text-4xl font-display font-bold uppercase tracking-tighter mb-8 leading-[0.9] text-white drop-shadow-lg">
+                        <h1 className="text-4xl font-archivo font-bold uppercase tracking-tighter mb-8 leading-[0.9] text-white drop-shadow-lg">
                             What's your<br />Contribution?
                         </h1>
 
@@ -264,8 +269,8 @@ const Onboarding: React.FC<OnboardingProps> = ({ onLogin }) => {
                                         </div>
                                     </div>
                                     <div>
-                                        <h3 className="text-3xl font-display font-bold uppercase text-white tracking-tight drop-shadow-md">Cop Fits</h3>
-                                        <p className="text-blue-100 text-xs font-mono font-bold uppercase tracking-wider mt-1 opacity-90">Browse & Buy Archive</p>
+                                        <h3 className="text-3xl font-archivo font-bold uppercase text-white tracking-tight drop-shadow-md">Cop Fits</h3>
+                                        <p className="text-blue-100 text-xs font-jet font-bold uppercase tracking-wider mt-1 opacity-90">Browse & Buy Archive</p>
                                     </div>
                                 </div>
                             </button>
@@ -292,8 +297,8 @@ const Onboarding: React.FC<OnboardingProps> = ({ onLogin }) => {
                                         </div>
                                     </div>
                                     <div>
-                                        <h3 className="text-3xl font-display font-bold uppercase text-white tracking-tight drop-shadow-md">Create Heat</h3>
-                                        <p className="text-orange-100 text-xs font-mono font-bold uppercase tracking-wider mt-1 opacity-90">Upcycle & Sell 1-of-1s</p>
+                                        <h3 className="text-3xl font-archivo font-bold uppercase text-white tracking-tight drop-shadow-md">Create Heat</h3>
+                                        <p className="text-orange-100 text-xs font-jet font-bold uppercase tracking-wider mt-1 opacity-90">Upcycle & Sell 1-of-1s</p>
                                     </div>
                                 </div>
                             </button>
@@ -310,7 +315,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onLogin }) => {
                             </div>
                         </div>
 
-                        <h1 className="text-4xl font-display font-bold uppercase tracking-tighter mb-2 text-white drop-shadow-lg">
+                        <h1 className="text-4xl font-archivo font-bold uppercase tracking-tighter mb-2 text-white drop-shadow-lg">
                             Define Your<br />Craft
                         </h1>
                         <p className="text-sm font-bold text-white/60 mb-8 max-w-xs">Select the services you provide to the community.</p>
@@ -343,11 +348,9 @@ const Onboarding: React.FC<OnboardingProps> = ({ onLogin }) => {
                             </div>
                         </div>
 
-                        <h1 className="text-7xl font-display font-bold uppercase tracking-tighter leading-[0.85] mb-6 drop-shadow-lg text-white">
-                            our<br />FIT
-                        </h1>
+                        <img src="/OF_Logo.png" alt="OurFit" className="mb-6 drop-shadow-lg mx-auto" style={{ height: 140, objectFit: 'contain' }} />
 
-                        <p className="text-sm font-mono font-bold uppercase tracking-widest max-w-[200px] leading-tight mb-12 border-y-2 border-brand-neon/50 py-4 text-white/80">
+                        <p className="text-sm font-jet font-bold uppercase tracking-widest max-w-[200px] leading-tight mb-12 border-y-2 border-brand-neon/50 py-4 text-white/80">
                             {role === 'ARTIST' ? 'Ready to change the game?' : 'Ready to join the cult?'}
                         </p>
                     </>
@@ -383,7 +386,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onLogin }) => {
                         {isLoading ? (
                             <div className="w-full h-14 bg-black/60 backdrop-blur border border-brand-neon/30 text-white rounded-xl flex items-center justify-center gap-3">
                                 <div className="w-5 h-5 border-2 border-brand-neon border-t-transparent rounded-full animate-spin" />
-                                <span className="font-mono text-xs uppercase tracking-widest text-brand-neon">Authenticating...</span>
+                                <span className="font-jet text-xs uppercase tracking-widest text-brand-neon">Authenticating...</span>
                             </div>
                         ) : (
                             <button

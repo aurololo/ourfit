@@ -2,7 +2,8 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { Product, User, ChatMessage } from "../types";
 
 // Initialize Gemini
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+let _ai: InstanceType<typeof GoogleGenAI> | null = null;
+const getAI = () => { if (!_ai) _ai = new GoogleGenAI({ apiKey: process.env.API_KEY ?? '' }); return _ai; };
 
 /**
  * Client-side utility to remove solid black background from an image string.
@@ -71,7 +72,7 @@ export const editProductImage = async (base64Image: string, prompt: string): Pro
 
         const model = 'gemini-2.5-flash-image';
 
-        const response = await ai.models.generateContent({
+        const response = await getAI().models.generateContent({
             model: model,
             contents: {
                 parts: [
@@ -123,7 +124,7 @@ export const generateVibeCheck = async (productTitle: string, tags: string[]): P
       4. No emojis, just raw text.
     `;
 
-        const response = await ai.models.generateContent({
+        const response = await getAI().models.generateContent({
             model: model,
             contents: prompt,
             config: {
@@ -149,7 +150,7 @@ export const suggestUpcycleIdea = async (productTitle: string): Promise<string> 
             Suggest a 1-sentence upcycling idea for a used "${productTitle}" to make it high-fashion streetwear. 
             Focus on techniques like patchwork, distressing, or painting.
         `;
-        const response = await ai.models.generateContent({
+        const response = await getAI().models.generateContent({
             model,
             contents: prompt
         });
@@ -164,7 +165,7 @@ export const suggestUpcycleIdea = async (productTitle: string): Promise<string> 
  */
 export const generateListingDetails = async (title: string): Promise<{ tags: string[], description: string, auraScore: number }> => {
     try {
-        const response = await ai.models.generateContent({
+        const response = await getAI().models.generateContent({
             model: "gemini-3-flash-preview",
             contents: `Generate listing details for a fashion item titled: "${title}". The description should be "indie-sleaze" style, GenZ coded, under 20 words. The aura score should be between 70 and 99 based on how "cool" or "niche" the item sounds.`,
             config: {
@@ -247,7 +248,7 @@ export const generateCraftBadge = async (craftName: string): Promise<string | nu
             Lighting: Studio lighting with strong highlights.
         `;
 
-        const response = await ai.models.generateContent({
+        const response = await getAI().models.generateContent({
             model: model,
             contents: {
                 parts: [{ text: prompt }]

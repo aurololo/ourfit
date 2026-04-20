@@ -35,7 +35,7 @@ const Discovery: React.FC<DiscoveryProps> = ({ products, onProductSelect }) => {
                 </video>
                 <div className="absolute inset-0 bg-gradient-to-r from-brand-black via-brand-black/50 to-transparent" />
 
-                <h1 className="relative z-10 text-4xl font-display font-bold uppercase py-10 px-6 flex items-center gap-2 text-white">
+                <h1 className="relative z-10 text-4xl font-archivo font-bold uppercase py-10 px-6 flex items-center gap-2 text-white">
                     <Search className="text-brand-orange" size={32} />
                     Find
                 </h1>
@@ -46,16 +46,17 @@ const Discovery: React.FC<DiscoveryProps> = ({ products, onProductSelect }) => {
                 <input
                     type="text"
                     placeholder="Search for vibes, brands, items..."
+                    aria-label="Search for vibes, brands, items"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-4 pl-12 text-lg focus:border-brand-orange focus:outline-none transition-colors"
+                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-4 pl-12 text-lg focus:border-brand-orange focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange transition-colors"
                 />
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
             </div>
 
             {/* Trending Tags */}
             <div className="mb-8">
-                <div className="flex items-center gap-2 mb-3 text-brand-orange font-mono text-xs uppercase tracking-widest">
+                <div className="flex items-center gap-2 mb-3 text-brand-orange font-jet text-xs uppercase tracking-widest">
                     <Flame size={14} />
                     <span>Trending Now</span>
                 </div>
@@ -78,10 +79,10 @@ const Discovery: React.FC<DiscoveryProps> = ({ products, onProductSelect }) => {
             {/* Results */}
             <div>
                 <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-bold font-display">
+                    <h2 className="text-xl font-bold font-archivo">
                         {activeTag ? `#${activeTag}` : 'Fresh Finds'}
                     </h2>
-                    <span className="text-gray-500 text-xs font-mono">{filteredProducts.length} RESULTS</span>
+                    <span className="text-gray-500 text-xs font-jet">{filteredProducts.length} RESULTS</span>
                 </div>
 
                 {filteredProducts.length > 0 ? (

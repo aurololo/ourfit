@@ -87,6 +87,7 @@ const AppContent: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User>(MOCK_USER);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [chatProduct, setChatProduct] = useState<Product | null>(null);
+  const [chatOfferAmount, setChatOfferAmount] = useState<number | undefined>(undefined);
   const [shippingProduct, setShippingProduct] = useState<Product | null>(null);
   const [showUpload, setShowUpload] = useState(false);
   const [wishlistIds, setWishlistIds] = useState<Set<string>>(
@@ -159,12 +160,14 @@ const AppContent: React.FC = () => {
     setSelectedProduct(null);
   };
 
-  const handleStartChat = (product: Product) => {
+  const handleStartChat = (product: Product, offerAmount?: number) => {
     setChatProduct(product);
+    setChatOfferAmount(offerAmount);
   };
 
   const handleBackFromChat = () => {
     setChatProduct(null);
+    setChatOfferAmount(undefined);
   };
 
   const handleNavigateToShipping = (product: Product) => {
@@ -226,6 +229,10 @@ const AppContent: React.FC = () => {
     setViewingUser(null);
   };
 
+  const handleEditProfile = (updates: Partial<User>) => {
+    setCurrentUser(prev => ({ ...prev, ...updates }));
+  };
+
   // Unread count for Navbar badge
   const totalUnread = chatSessions.reduce((sum, s) => sum + s.unreadCount, 0);
 
@@ -245,7 +252,7 @@ const AppContent: React.FC = () => {
     );
   }
 
-  if (viewingUser) {
+  if (viewingUser && !selectedProduct) {
     if (viewingUser.role === 'ARTIST') {
       return (
         <ArtistProfile
@@ -289,6 +296,7 @@ const AppContent: React.FC = () => {
         onViewProfile={handleViewProfile}
         accent={accent}
         dark={dark}
+        initialOfferAmount={chatOfferAmount}
       />
     );
   }
@@ -354,6 +362,7 @@ const AppContent: React.FC = () => {
             accent={accent}
             dark={dark}
             layout={profileLayout}
+            onEditProfile={handleEditProfile}
           />
         )}
 
