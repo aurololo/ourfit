@@ -150,7 +150,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onLogin }) => {
     }, []);
 
     return (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-between overflow-hidden text-white font-sans">
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-between overflow-hidden text-white font-sans" style={{ background: '#0A0A0A' }}>
             {/* Video — visible so it shows while canvas warms up; canvas covers it once drawing starts */}
             <video
                 ref={videoRef}
