@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Sparkles, ArrowRight, RefreshCw, Zap, ArrowLeft, Palette, ShoppingBag } from 'lucide-react';
 
 interface OnboardingProps {
@@ -103,76 +103,22 @@ const Onboarding: React.FC<OnboardingProps> = ({ onLogin }) => {
         return 3;
     };
 
-    // Canvas-based pixelation — the only cross-browser method that works on mobile video
-    const videoRef = useRef<HTMLVideoElement>(null);
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const animFrameRef = useRef<number>(0);
-
-    useEffect(() => {
-        const video = videoRef.current;
-        const canvas = canvasRef.current;
-        if (!video || !canvas) return;
-
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        // PIXEL_SCALE: higher = more pixelated. 14 obscures faces while staying subtle.
-        const PIXEL_SCALE = 14;
-        const off = document.createElement('canvas');
-
-        const resize = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        };
-        resize();
-        window.addEventListener('resize', resize);
-
-        const draw = () => {
-            if (video.readyState >= 2) {
-                off.width = Math.max(1, Math.ceil(canvas.width / PIXEL_SCALE));
-                off.height = Math.max(1, Math.ceil(canvas.height / PIXEL_SCALE));
-                const offCtx = off.getContext('2d');
-                if (offCtx) {
-                    offCtx.drawImage(video, 0, 0, off.width, off.height);
-                    ctx.imageSmoothingEnabled = false;
-                    ctx.drawImage(off, 0, 0, canvas.width, canvas.height);
-                }
-            }
-            animFrameRef.current = requestAnimationFrame(draw);
-        };
-
-        animFrameRef.current = requestAnimationFrame(draw);
-
-        return () => {
-            cancelAnimationFrame(animFrameRef.current);
-            window.removeEventListener('resize', resize);
-        };
-    }, []);
-
     return (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-between overflow-hidden text-white font-sans" style={{ background: '#0A0A0A' }}>
-            {/* Video — visible so it shows while canvas warms up; canvas covers it once drawing starts */}
-            <video
-                ref={videoRef}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="absolute inset-0 w-full h-full object-cover"
-                poster="/videos/onboarding-poster.jpg"
-            >
-                <source src="/videos/ourfit-onboarding.mp4" type="video/mp4" />
-            </video>
-
-            {/* Canvas — pixelated overlay, covers the video once frames are ready */}
-            <canvas
-                ref={canvasRef}
-                className="absolute inset-0 w-full h-full"
-                style={{ imageRendering: 'pixelated' }}
-            />
+            {/* Animated gradient background */}
+            <div className="absolute inset-0" style={{
+                background: 'radial-gradient(ellipse at 20% 50%, rgba(255,107,53,0.18) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(204,255,0,0.12) 0%, transparent 50%), radial-gradient(ellipse at 60% 80%, rgba(124,58,237,0.15) 0%, transparent 55%), #0A0A0A',
+                animation: 'bgShift 8s ease-in-out infinite alternate',
+            }} />
+            <style>{`
+                @keyframes bgShift {
+                    0%   { filter: hue-rotate(0deg) brightness(1); }
+                    100% { filter: hue-rotate(15deg) brightness(1.08); }
+                }
+            `}</style>
 
             {/* Gradient Overlay — heavier so text always readable */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/30" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/20" />
 
             {/* Noise Overlay */}
             <div className="absolute inset-0 bg-noise opacity-40 mix-blend-overlay pointer-events-none contrast-125" />
