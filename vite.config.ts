@@ -18,7 +18,13 @@ export default defineConfig(({ mode }) => {
       react(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['icon.svg'],
+        injectRegister: 'auto',
+        workbox: {
+          skipWaiting: true,
+          clientsClaim: true,
+          cleanupOutdatedCaches: true,
+        },
+        includeAssets: ['icon.svg', 'OF_Logo.png'],
         manifest: {
           name: 'ourFIT',
           short_name: 'ourFIT',
